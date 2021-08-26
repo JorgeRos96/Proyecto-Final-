@@ -31,6 +31,7 @@
 .\objects\http_server.o: C:\Users\User\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\STM32F4xx_HAL_Driver\Inc\stm32f4xx_hal_flash_ramfunc.h
 .\objects\http_server.o: C:\Users\User\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\STM32F4xx_HAL_Driver\Inc\stm32f4xx_hal_i2c.h
 .\objects\http_server.o: C:\Users\User\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\STM32F4xx_HAL_Driver\Inc\stm32f4xx_hal_i2c_ex.h
+.\objects\http_server.o: C:\Users\User\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\STM32F4xx_HAL_Driver\Inc\stm32f4xx_hal_iwdg.h
 .\objects\http_server.o: C:\Users\User\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\STM32F4xx_HAL_Driver\Inc\stm32f4xx_hal_pwr.h
 .\objects\http_server.o: C:\Users\User\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\STM32F4xx_HAL_Driver\Inc\stm32f4xx_hal_pwr_ex.h
 .\objects\http_server.o: C:\Users\User\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\STM32F4xx_HAL_Driver\Inc\stm32f4xx_hal_rtc.h
@@ -39,12 +40,11 @@
 .\objects\http_server.o: C:\Users\User\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\STM32F4xx_HAL_Driver\Inc\stm32f4xx_hal_tim.h
 .\objects\http_server.o: C:\Users\User\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\STM32F4xx_HAL_Driver\Inc\stm32f4xx_hal_tim_ex.h
 .\objects\http_server.o: C:\Users\User\AppData\Local\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\RTOS2\Include\cmsis_os2.h
-.\objects\http_server.o: SNTP.h
+.\objects\http_server.o: RTC.h
+.\objects\http_server.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\time.h
 .\objects\http_server.o: C:\Users\User\AppData\Local\Arm\Packs\Keil\MDK-Middleware\7.12.0\Network\Include\rl_net.h
 .\objects\http_server.o: C:\Users\User\AppData\Local\Arm\Packs\Keil\MDK-Middleware\7.12.0\Network\Include\rl_net_ds.h
 .\objects\http_server.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
-.\objects\http_server.o: RTC.h
-.\objects\http_server.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\time.h
 .\objects\http_server.o: Board_LED.h
 .\objects\http_server.o: Temp.h
 .\objects\http_server.o: C:\Users\User\AppData\Local\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\Driver\Include\Driver_I2C.h
@@ -55,3 +55,4 @@
 .\objects\http_server.o: USART.h
 .\objects\http_server.o: C:\Users\User\AppData\Local\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\Driver\Include\Driver_USART.h
 .\objects\http_server.o: RGB.h
+.\objects\http_server.o: Watchdog.h

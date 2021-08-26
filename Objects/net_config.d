@@ -4,7 +4,6 @@
 .\objects\net_config.o: RTE\Network\Net_Config_UDP.h
 .\objects\net_config.o: RTE\Network\Net_Config_TCP.h
 .\objects\net_config.o: RTE\Network\Net_Config_HTTP_Server.h
-.\objects\net_config.o: RTE\Network\Net_Config_SNTP_Client.h
 .\objects\net_config.o: C:\Users\User\AppData\Local\Arm\Packs\Keil\MDK-Middleware\7.12.0\Network\Include\net_config.h
 .\objects\net_config.o: C:\Users\User\AppData\Local\Arm\Packs\Keil\MDK-Middleware\7.12.0\Network\Include\rl_net_lib.h
 .\objects\net_config.o: C:\Users\User\AppData\Local\Arm\Packs\Keil\MDK-Middleware\7.12.0\Network\Include\rl_net_ds.h
