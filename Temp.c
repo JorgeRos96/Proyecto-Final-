@@ -36,8 +36,8 @@ extern ARM_DRIVER_I2C Driver_I2C1;
 static ARM_DRIVER_I2C *I2Cdev = &Driver_I2C1;
 
 
-void initI2c();
-float leerTemperatura();
+void initI2c(void);
+float leerTemperatura(void);
 
 /**
   * @brief Función de inicialización del I2C en modo FAST

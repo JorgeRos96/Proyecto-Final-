@@ -35,8 +35,7 @@ TIM_HandleTypeDef htim6;
 	void Init_Delay(int fsist, int APB1){
 		TIM_ClockConfigTypeDef sClockSourceConfig = {0};
 		TIM_MasterConfigTypeDef sMasterConfig = {0};
-		TIM_OC_InitTypeDef sConfigOC = {0};
-		TIM_BreakDeadTimeConfigTypeDef sBreakDeadTimeConfig = {0};
+
 
 		/*Configuración del Timer 6*/
 		htim6.Instance = TIM6;
@@ -82,5 +81,6 @@ TIM_HandleTypeDef htim6;
 		
 		for (uint16_t i=0; i<ms; i++)
 			Delay_us (1000); // delay of 1 ms
-		
 	}
+	
+	

@@ -64,10 +64,8 @@ int ADC1_Init(void)
   */
 int32_t lectura(void)
 	{
-				HAL_StatusTypeDef status;
-
+		HAL_StatusTypeDef status;
 		uint32_t conversion = 0;
-		float voltaje = 0;
 		
 		/*Se inicia la conversión a traves del ADC*/
 		HAL_ADC_Start(&hadc1);
@@ -78,5 +76,5 @@ int32_t lectura(void)
 		conversion = (int32_t) HAL_ADC_GetValue(&hadc1);
 	
 		return conversion;		
-
 }
+

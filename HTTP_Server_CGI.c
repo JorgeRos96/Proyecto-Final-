@@ -1,12 +1,20 @@
-/*------------------------------------------------------------------------------
- * MDK Middleware - Component ::Network:Service
- * Copyright (c) 2004-2018 ARM Germany GmbH. All rights reserved.
- *------------------------------------------------------------------------------
- * Name:    HTTP_Server_CGI.c
- * Purpose: HTTP Server CGI Module
- * Rev.:    V6.0.0
- *----------------------------------------------------------------------------*/
-
+/**
+  ******************************************************************************
+  * @file    Templates/Src/HTTP_Server_CGI.c 
+  * @author  MCD Application Team
+  * @brief   Fichero donde se realizan las funciones que tratan los datos que se
+	*					 envían desde la página web a traves de solicitudes GET y POST.
+	*					 Además se realiza la gestión de los comandos codificados en los ficheros
+	*					 CGI cuando se realizan las peticiones desde la página web.
+	*
+  * @note    modified by ARM
+  *          The modifications allow to use this file as User Code Template
+  *          within the Device Family Pack.
+  ******************************************************************************
+  *
+  ******************************************************************************
+  */
+	
 #include <stdio.h>
 #include <string.h>
 #include "cmsis_os2.h"                  // ::CMSIS:RTOS2
@@ -26,6 +34,7 @@
 extern char time_text[2][20+1];
 extern osThreadId_t TID_Rtc_setTime;
 extern osThreadId_t TID_Rtc_setDate;
+
 // http_server.c
 extern uint16_t AD_in (uint32_t ch);
 extern float temperatura(void);
@@ -47,8 +56,13 @@ typedef struct {
 } MY_BUF;
 #define MYBUF(p)        ((MY_BUF *)p)
 
-// Process query string received by GET request.
+/**
+  * @brief Función que procesa la consulta recibida por la petición GET. 
+	* @param arg
+  * @retval None
+  */
 void netCGI_ProcessQuery (const char *qstr) {
+	
   netIF_Option opt = netIF_OptionMAC_Address;
   int16_t      typ = 0;
   char var[40];
@@ -56,8 +70,8 @@ void netCGI_ProcessQuery (const char *qstr) {
   do {
     // Loop through all the parameters
     qstr = netCGI_GetEnvVar (qstr, var, sizeof (var));
-    // Check return string, 'qstr' now points to the next parameter
-
+    
+		// Check return string, 'qstr' now points to the next parameter
     switch (var[0]) {
       case 'i': // Local IP address
         if (var[1] == '4') { opt = netIF_OptionIP4_Address;       }
@@ -101,13 +115,17 @@ void netCGI_ProcessQuery (const char *qstr) {
   } while (qstr);
 }
 
-// Process data received by POST request.
-// Type code: - 0 = www-url-encoded form data.
-//            - 1 = filename for file upload (null-terminated string).
-//            - 2 = file upload raw data.
-//            - 3 = end of file upload (file close requested).
-//            - 4 = any XML encoded POST data (single or last stream).
-//            - 5 = the same as 4, but with more XML data to follow.
+/**
+  * @brief Función que procesa la consulta recibida por la solicitud POST.
+	*	 			 Type code: - 0 = www-url-encoded form data.
+	*										- 1 = filename for file upload (null-terminated string).
+	*										- 2 = file upload raw data.
+	*										- 3 = end of file upload (file close requested).
+	*										- 4 = any XML encoded POST data (single or last stream).
+	*										- 5 = the same as 4, but with more XML data to follow.
+	* @param arg
+  * @retval None
+  */
 void netCGI_ProcessData (uint8_t code, const char *data, uint32_t len) {
   char var[40],passw[12];
 
@@ -115,7 +133,6 @@ void netCGI_ProcessData (uint8_t code, const char *data, uint32_t len) {
     // Ignore all other codes
     return;
   }
-
   P2 = 0;
   LEDrun = true;
   if (len == 0) {
@@ -127,41 +144,47 @@ void netCGI_ProcessData (uint8_t code, const char *data, uint32_t len) {
   do {
     // Parse all parameters
     data = netCGI_GetEnvVar (data, var, sizeof (var));
-    if (var[0] != 0) {
-      // First character is non-null, string exists
+		// First character is non-null, string exists
+		if (var[0] != 0) {
+      /*Si se recibe el comando de encender el LED 0*/
       if (strcmp (var, "led0=on") == 0) {
         P2 |= 0x01;
       }
+			/*Si se recibe el comando de encender el LED 1*/
       else if (strcmp (var, "led1=on") == 0) {
         P2 |= 0x02;
       }
+			/*Si se recibe el comando de encender el LED 2*/
       else if (strcmp (var, "led2=on") == 0) {
         P2 |= 0x04;
       }
+			/*Si se recibe el comando para entrar en el modo Browser se para el running lights*/
       else if (strcmp (var, "ctrl=Browser") == 0) {
         LEDrun = false;
       }
-      else if ((strncmp (var, "pw0=", 4) == 0) ||
-               (strncmp (var, "pw2=", 4) == 0)) {
-        // Change password, retyped password
+			// Change password, retyped password
+      else if ((strncmp (var, "pw0=", 4) == 0) ||(strncmp (var, "pw2=", 4) == 0)) {
+        /*Si se encuentra activo el login para acceder*/
         if (netHTTPs_LoginActive()) {
           if (passw[0] == 1) {
             strcpy (passw, var+4);
           }
+					// Both strings are equal, change the password
           else if (strcmp (passw, var+4) == 0) {
-            // Both strings are equal, change the password
             netHTTPs_SetPassword (passw);
           }
         }
       }
+			/* Si se reibe para representar la primera linea de la pantalla LCD*/
       else if (strncmp (var, "lcd1=", 5) == 0) {
-        // LCD Module line 1 text
+       /*Se copia en el buffer que se escribe por pantalla de la línea 1*/
        strcpy (lcd_text[0], var+5);
-       //osThreadFlagsSet (TID_Display, 0x01);
       }
+			// Si se reibe para representar la segunda linea de la pantalla LCD*/
       else if (strncmp (var, "lcd2=", 5) == 0) {
-        // LCD Module line 2 text
+				/*Se copia en el buffer que se escribe por pantalla de la línea 2*/
         strcpy (lcd_text[1], var+5);
+				/*Se envía una señal al hilo Display para representar por pantalla*/
         osThreadFlagsSet (TID_Display, 0x01);
       }
 			/*Se recibe el valor de la hora estableido en la página web y manda señal para establecerlo en RTC*/				 
@@ -176,12 +199,24 @@ void netCGI_ProcessData (uint8_t code, const char *data, uint32_t len) {
       }
     }
   } while (data);
+	/*Se actualiza el LED que se ha seleccionado encender*/
   LED_SetOut (P2);
 }
 
-// Generate dynamic web data from a script line.
+/**
+  * @brief Función que procesa la información del script CGI cuyas lineas comienzan por el comando c. Dentro de la variable
+	*				 env que se recibe por parámetro se encuentra la misma cadena que se define en el script y por el que se identifica
+	*				 la acción a realizar. 
+	* @param arg
+	* @param *buf: El argumento buff es el puntero al buffer de salida donde la función escribe la respuesta http
+	*	@param buflen: Indica el tamaño del buffer de salida en bytes
+	*	@param *pcgi: Puntero a la variable que no se modifica y se puede utilizar para almacenar parametros durante varias llamadas
+	*				 a la función.
+  * @retval Devuelve el número de bytes escritos en el buffer de salida
+  */
 uint32_t netCGI_Script (const char *env, char *buf, uint32_t buflen, uint32_t *pcgi) {
-  int32_t socket;
+  
+	int32_t socket;
   netTCP_State state;
   NET_ADDR r_client;
   const char *lang;
@@ -191,8 +226,7 @@ uint32_t netCGI_Script (const char *env, char *buf, uint32_t buflen, uint32_t *p
 	float temp;
   netIF_Option opt = netIF_OptionMAC_Address;
   int16_t      typ = 0;
-	char time[8];
-	char date[10];
+
 
   switch (env[0]) {
     // Analyze a 'c' script line starting position 2
@@ -250,7 +284,7 @@ uint32_t netCGI_Script (const char *env, char *buf, uint32_t buflen, uint32_t *p
       break;
 
     case 'b':
-      // LED control from 'led.cgi'
+      /* Control del  LED que se manda desde el 'led.cgi'*/
       if (env[2] == 'c') {
         // Select Control
         len = (uint32_t)sprintf (buf, &env[4], LEDrun ?     ""     : "selected",
@@ -341,7 +375,7 @@ uint32_t netCGI_Script (const char *env, char *buf, uint32_t buflen, uint32_t *p
       break;
 
     case 'f':
-      // LCD Module control from 'lcd.cgi'
+      // Control de la pantalla LCD desde 'lcd.cgi' */
       switch (env[2]) {
         case '1':
           len = (uint32_t)sprintf (buf, &env[4], lcd_text[0]);
@@ -353,70 +387,78 @@ uint32_t netCGI_Script (const char *env, char *buf, uint32_t buflen, uint32_t *p
       break;
 
     case 'g':
-      // AD Input from 'ad.cgi'
+      // Control del potenciometro mandado desdez 'ad.cgi'*/
       switch (env[2]) {
+				/*Se manda actualizar el valor del potenciometro en hexadecimal*/
         case '1':
           adv = AD_in (0);
           len = (uint32_t)sprintf (buf, &env[4], adv);
-          break;
-        case '2':
+				break;
+				
+				/*Se manda actualizar el valor del potenciometro en voltios*/
+        case '2':				
           len = (uint32_t)sprintf (buf, &env[4], (double)((float)adv*3.3f)/4096);
+					/*Se envía el valor actualizado del potenciometro a traves de la USART*/
 					s = sprintf(ubuf,"\rEl valor del potenciometro es %f\n", (double)((float)adv*3.3f)/4096);
 					tx_USART(ubuf, s);
-          break;
+        break;
+				
+				/*Se manda actualizar el valor del potenciometro del gráfico*/
         case '3':
           adv = (adv * 100) / 4096;
           len = (uint32_t)sprintf (buf, &env[4], adv);
-          break;
+				break;
       }
-      break;
-
+    break;
+			
+		/* Actualización del valor del potenciometro de manera periodica desde "AD.cgx"*/
     case 'x':
-      // AD Input from 'ad.cgx' (de forma periodica)
       adv = AD_in (0);
       len = (uint32_t)sprintf (buf, &env[1], adv);
+			/*Se envía el valor actualizado del potenciometro a traves de la USART*/
 			s = sprintf(ubuf,"\rEl valor del potenciometro es %f\n", (double)((float)adv*3.3f)/4096);
 			tx_USART(ubuf, s);
-      break;
-
-    case 'y':
-      // Button state from 'button.cgx'
-     // len = (uint32_t)sprintf (buf, "<checkbox><id>button%c</id><on>%s</on></checkbox>",
-                           //    env[1], (get_button () & (1 << (env[1]-'0'))) ? "true" : "false");
-      break;
+    break;
+		
+		/*Actualización del valot de la temperatura desde Temp.cgi*/
 		case 'z':
-      
       temp = temperatura();
 		  len = (uint32_t)sprintf (buf, &env[4], temp);
+			/*Se envía el valor actualizado de ña temperatura a traves de la USART*/
 			s = sprintf(ubuf,"\rLa temperatura es de %f\n", temp);
 			tx_USART(ubuf, s);
-      break;
+		break;
 		
+		/*Actualización del valor de la temperatura de manera periodica desde Temp.cgx*/
 		case 'm':
 			temp = temperatura();
 		  len = (uint32_t)sprintf (buf, &env[1], temp);
+			/*Se envía el valor actualizado de ña temperatura a traves de la USART*/
 			s = sprintf(ubuf,"\rLa temperatura es de %f\n", temp);
 			tx_USART(ubuf, s);
-      break;
+    break;
+		
 		case 'r':
 			switch (env[2]) {
-			/*Se escribe en el buffer de salida el número total de segundos*/
-			case '1':
-			adv=getTotalSeconds(); 
-				len = (uint32_t)sprintf (buf, &env[4], adv);
-			break;
-					}
-			break;
-			case 's':
+				/*Se escribe en el buffer de salida el número total de segundos*/
+				case '1':
+					adv=getTotalSeconds(); 
+					len = (uint64_t)sprintf (buf, &env[4], adv);
+				break;
+			}			
+		break;
+			
+		case 's':
       switch (env[2]) {
 				/*Se escribe en el buffer de salida el número total de segundos para actualizar el EPOCH Time*/
         case '1':
          adv=getTotalSeconds();
-					len = (uint32_t)sprintf (buf, &env[4], adv);
-          break;
+				 len = (uint64_t)sprintf (buf, &env[4], adv);
+				break;
       }		
-				
-			case 't':
+		break;
+			
+		case 't':
 			switch (env[2]) {
 				/*Escribe en el buffer de salida la hora*/
 				case '1':
@@ -426,9 +468,8 @@ uint32_t netCGI_Script (const char *env, char *buf, uint32_t buflen, uint32_t *p
 				case '2':
 					len = (uint32_t)sprintf (buf, &env[4], time_text[1]);
 				break;
-
-					}
-				break;
+			}
+		break;
   }
   return (len);
 }

@@ -19,4 +19,4 @@ void RTC_IRQHandler (void);
 extern osThreadId_t TID_Rtc_led;
 extern osThreadId_t TID_Rtc_setTime;
 extern osThreadId_t TID_Rtc_setDate;
-uint32_t getTotalSeconds(void);
+uint64_t getTotalSeconds(void);

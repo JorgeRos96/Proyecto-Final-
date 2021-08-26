@@ -144,8 +144,8 @@ uint16_t getAnio(void){
 	* @param 
   * @retval Devuelve valor de los seundos pasados desde el 1/1/1970
   */
-uint32_t getTotalSeconds(void){
-	uint32_t segundos;
+uint64_t getTotalSeconds(void){
+	uint64_t segundos;
 	segundos=unix_time_in_seconds(getSeg(), getMin(), getHora(), getDia(), getMes(), getAnio()); 
 	return segundos;
 }
@@ -156,11 +156,6 @@ uint32_t getTotalSeconds(void){
   */
 void MX_RTC_Init(void)
 {
-
-  RTC_TimeTypeDef sTime = {0};
-  RTC_DateTypeDef sDate = {0};
-  RTC_AlarmTypeDef sAlarm = {0};
-
   /** Initialize RTC Only
   */
   hrtc.Instance = RTC;

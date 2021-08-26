@@ -124,8 +124,7 @@ void wr_cmd(unsigned char cmd){
   * @retval None
   */
 int LCD_reset(void){
-	int i;
-	
+
 	uint32_t	status = 0;
 	
 	/*Inicialización del SPI*/

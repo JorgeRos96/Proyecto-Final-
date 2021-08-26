@@ -98,7 +98,6 @@ void HAL_MspDeInit(void)
 */
 void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* htim_base)
 {
-	 GPIO_InitTypeDef GPIO_InitStruct = {0};
   
 	if(htim_base->Instance==TIM6)
   {

@@ -61,7 +61,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "Delay.h"
-
+#include "Watchdog.h"
 
 #ifdef RTE_CMSIS_RTOS2_RTX5
 /**
@@ -86,21 +86,10 @@ uint32_t HAL_GetTick (void) {
 
 #endif
 
-/** @addtogroup stm32f4xx_hal_Examples
-  * @{
-  */
 
-/** @addtogroup Templates
-  * @{
-  */
-
-/* Private typedef -----------------------------------------------------------*/
-/* Private define ------------------------------------------------------------*/
-/* Private macro -------------------------------------------------------------*/
-/* Private variables ---------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
 static void SystemClock_Config(void);
-static void Error_Handler(void);
+static void Error_Handler(int fallo);
 
 /* Private functions ---------------------------------------------------------*/
 /**
@@ -110,7 +99,10 @@ static void Error_Handler(void);
   */
 int main(void)
 {
-
+	/*Inicialización del IWDG*/
+	if (init_Watchdog() != 0)
+			Error_Handler(2);	
+	
   /* stm32f7xx HAL library initialization:
        - Configure the Flash prefetch, Flash preread and Buffer caches
        - Systick timer is configured by default as source of time base, but user 
@@ -120,16 +112,15 @@ int main(void)
              handled in milliseconds basis.
        - Low Level Initialization
      */
-  HAL_Init();
+  if (HAL_Init() != HAL_OK)
+		Error_Handler(0);
 
-  /* Configure the system clock to 168 MHz */
+  /* Configure the system clock to 180 MHz */
   SystemClock_Config();
   SystemCoreClockUpdate();
 	
 	Init_Delay(180,4);
 
-  /* Add your application code here
-     */
 
 #ifdef RTE_CMSIS_RTOS2
   /* Initialize CMSIS-RTOS2 */
@@ -196,14 +187,14 @@ static void SystemClock_Config(void)
   RCC_OscInitStruct.PLL.PLLQ = 4;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
-    Error_Handler();
+    Error_Handler(1);
   }
   /** Se activa el modo de Over Drive para poder alcanzar los 180 MHz
 	* 	como frecuencia del sistema
   */
   if (HAL_PWREx_EnableOverDrive() != HAL_OK)
   {
-    Error_Handler();
+    Error_Handler(1);
   }
   /** Se selecciona el PLL como fuente de reloj del sistema y se configuran los parametros
 	*		para configurar el HCLK, PCLK1 y PCLK2. La frecuencia máxima del HCLK es 180 MHZ, la 
@@ -221,7 +212,7 @@ static void SystemClock_Config(void)
 
   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5) != HAL_OK)
   {
-    Error_Handler();
+    Error_Handler(1);
   }
 }
 
@@ -230,9 +221,20 @@ static void SystemClock_Config(void)
   * @param  None
   * @retval None
   */
-static void Error_Handler(void)
-{
-  /* User may add here some code to deal with this error */
+static void Error_Handler(int fallo)
+{	
+	char buf [100];
+	
+	if(fallo == 0)
+		/* Mensaje si se ha producido un error en la inicializacón de la librería HAL*/
+		sprintf(buf,"\r Se ha producido un error al inicializar la librería HAL\n");
+	else if (fallo == 1)
+		/* Mensaje si se ha producido un error en la inicializacón del reloj del sistema*/
+		sprintf(buf,"\r Se ha producido un error al inicializar el reloj del sistema\n");
+	else if (fallo == 2)
+		/* Mensaje si se ha producido un error en la inicialización del Watchdog*/
+		sprintf(buf,"\r Se ha producido un error al inicializar el Watchdog\n");
+ 
   while(1)
   {
   }
